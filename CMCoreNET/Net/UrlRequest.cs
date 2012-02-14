@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CMCoreNET.Net
 {
@@ -35,6 +36,8 @@ namespace CMCoreNET.Net
         private System.Timers.Timer requestTimer;
         private int currentResponseTime = 0;
         private SynchronizationContext context;
+        Action<UrlRequestEventArgs> callback;
+
         #endregion
 
         #region Properties
@@ -58,13 +61,6 @@ namespace CMCoreNET.Net
         private bool HasData {
             get { return (this.data != null && this.data.Length > 0); }
         }
-
-        #endregion
-
-        #region Events
-
-        public delegate void Complete(UrlRequestEventArgs args);
-        public event Complete RequestCompleteEvent;
 
         #endregion
 
@@ -100,35 +96,12 @@ namespace CMCoreNET.Net
             this.Cookies.Add(cookie);
         }
 
-        public void Load(string url) { this.Load(url, null); }
+        public void Load(string url, Action<UrlRequestEventArgs> callback) {
+            this.Url = url;
+            this.callback = callback;
+            Task t = new Task(InitRequest);
+            t.Start();
 
-        public void Load(string url,
-            UrlRequestMethod? method) {
-                this.Load(url, method, (string)null);
-        }
-
-        public void Load(string url,
-            UrlRequestMethod? method,
-            string data) {
-            this.Load(url, method, EncodeString(data));
-        }
-
-        public void Load(string url,
-            UrlRequestMethod? method,
-            byte[] data) {
-            if (!string.IsNullOrEmpty(url))
-                this.Url = url;
-
-            if (method != null)
-                this.RequestMethod = method;
-
-            if (data != null && data.Length > 0)
-                this.data = data;
-
-            if (string.IsNullOrEmpty(this.Url))
-                throw new ArgumentNullException("The url cannot be null or empty");
-
-            InitRequest();
         }
 
         /// <summary>
@@ -212,33 +185,21 @@ namespace CMCoreNET.Net
         }
 
         private void SendRequestData() {
-            IAsyncResult result = request.BeginGetRequestStream(
-                new AsyncCallback(RequestStreamCallback), null);
-        }
-
-        private void GetResponse() {
-            IAsyncResult result = request.BeginGetResponse(
-                    new AsyncCallback(ResponseCallback), null);
-        }
-
-        private void RequestStreamCallback(IAsyncResult result) {
-            Stream streamToWrite = request.EndGetRequestStream(result);
+            Stream streamToWrite = request.GetRequestStream();
             streamToWrite.Write(this.data, 0, this.data.Length);
             streamToWrite.Close();
             GetResponse();
         }
 
-        private void ResponseCallback(IAsyncResult result) {
-            response = 
-                this.request.EndGetResponse(result) as HttpWebResponse;
-            
+        private void GetResponse() {
+            response =
+                this.request.GetResponse() as HttpWebResponse;
+
             StopTimerAndDispose();
             PopulateEventObject();
-            DispatchCompleteEvent();
-        }
-
-        private void ReadResponseCallback(IAsyncResult result) {
-            
+            this.context.Post((o) => {
+                this.callback.Invoke(o as UrlRequestEventArgs);
+            }, this.requestEventObject);
         }
 
         private void PopulateEventObject() {
@@ -250,17 +211,6 @@ namespace CMCoreNET.Net
             this.requestEventObject.Headers = response.Headers;
             this.requestEventObject.Cookies = response.Cookies;
             this.requestEventObject.ResponseStream = response.GetResponseStream();
-        }
-
-        private void DispatchCompleteEvent() {
-            if (this.RequestCompleteEvent != null)
-                RequestCompleteEvent(this.requestEventObject);
-
-            foreach (var dispatcher in this.RequestCompleteEvent.GetInvocationList()) {
-                this.context.Post((o) => {
-                    dispatcher.DynamicInvoke(o);
-                }, this.requestEventObject);
-            }
         }
 
         private void CleanupSelf() {
