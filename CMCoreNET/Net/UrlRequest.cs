@@ -96,17 +96,19 @@ namespace CMCoreNET.Net
             this.Cookies.Add(cookie);
         }
 
-        public void Load(string url, Action<UrlRequestEventArgs> callback) {
+        public UrlRequestEventArgs LoadSync(string url) {
+            this.Url = url;
+            InitRequest();
+            return this.requestEventObject;
+        }
+
+        public void LoadAsync(string url, Action<UrlRequestEventArgs> callback) {
             this.Url = url;
             this.callback = callback;
             Task t = new Task(InitRequest);
             t.Start();
-
         }
 
-        /// <summary>
-        /// Kill a running request
-        /// </summary>
         public void Kill() {
             if (this.request != null) request.Abort();
         }
@@ -192,14 +194,16 @@ namespace CMCoreNET.Net
         }
 
         private void GetResponse() {
-            response =
-                this.request.GetResponse() as HttpWebResponse;
+            response = this.request.GetResponse() as HttpWebResponse;
 
             StopTimerAndDispose();
             PopulateEventObject();
-            this.context.Post((o) => {
-                this.callback.Invoke(o as UrlRequestEventArgs);
-            }, this.requestEventObject);
+
+            if (this.context != null) {
+                this.context.Post((o) => {
+                    this.callback.Invoke(o as UrlRequestEventArgs);
+                }, this.requestEventObject);
+            }
         }
 
         private void PopulateEventObject() {
