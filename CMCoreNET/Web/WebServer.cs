@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.IO;
+using System.Web;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using CMCoreNET.Net;
@@ -52,8 +54,6 @@ namespace CMCoreNET.Web
 
         #endregion
 
-        public WebServer() : this(null) { }
-
         public WebServer(string path) {
             this.Path = path;
             this.context = SynchronizationContext.Current;
@@ -70,11 +70,16 @@ namespace CMCoreNET.Web
             this.simpleCallback = callback;
         }
 
+        public void Post() {
+            Post(null);
+        }
+
         public void Post(string data) {
             VerifiyCallbacks();
             if (string.IsNullOrEmpty(data) && this.data == null)
                 throw new ArgumentNullException("The post data cannot be null or empty for a POST");
-            this.data = data.GetBytes();
+            if (!string.IsNullOrEmpty(data))
+                this.data = data.GetBytes();
             StartTask();
         }
 
@@ -87,8 +92,8 @@ namespace CMCoreNET.Web
             this.request.Cookies.Add(cookie);
         }
 
-        public void AddHeader(string header) {
-            this.request.Headers.Add(header);
+        public void AddHeader(HttpRequestHeader name, string value) {
+            this.request.Headers.Add(name, value);
         }
 
         #endregion
@@ -131,8 +136,8 @@ namespace CMCoreNET.Web
             dto.StatusDescription = this.response.StatusDescription;
             
             var stream = this.response.GetResponseStream();
-            using (BinaryReader reader = new BinaryReader(stream)) {
-                dto.Contents = reader.ReadBytes(dto.ContentLength);
+            using (TextReader reader = new StreamReader(stream)) {
+                dto.Contents = reader.ReadToEnd().GetBytes();
             }
             return dto;
         }

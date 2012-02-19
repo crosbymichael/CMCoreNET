@@ -6,15 +6,7 @@ using System.Net;
 using System.IO;
 namespace CMCoreNET.Net
 {
-    public enum UrlRequestMethod
-    {
-        POST,
-        GET,
-        PUT,
-        OPTION,
-        HEAD
-    }
-
+    
     /// <summary>
     /// UrlRequest
     /// Request a stream to a url on the internet or network.
@@ -28,6 +20,7 @@ namespace CMCoreNET.Net
         private int timeout = 0;
         private WebRequest request;
         private HttpWebResponse response;
+        private CookieCollection cookies;
 
         #endregion
 
@@ -46,8 +39,18 @@ namespace CMCoreNET.Net
             set { this.timeout = value; }
         }
 
-        public WebHeaderCollection Headers { get; set; }
-        public CookieCollection Cookies { get; set; }
+        public WebHeaderCollection Headers {
+            get {
+                return this.request.Headers;
+            }
+        }
+
+        public CookieCollection Cookies {
+            get {
+                if (this.cookies == null) this.cookies = new CookieCollection();
+                return this.cookies;
+            }
+        }
 
         public byte[] Data { get { return this.data; } set { this.data = value; } }
 
@@ -55,12 +58,9 @@ namespace CMCoreNET.Net
 
         #region Constructors
 
-        public UrlRequest() {
-            
-        }
-
         public UrlRequest(string url) {
             this.Url = url;
+            CreateRequest();
         }
 
         #endregion
@@ -92,6 +92,8 @@ namespace CMCoreNET.Net
             return this.response;
         }
 
+        
+
         #endregion
 
 
@@ -99,11 +101,6 @@ namespace CMCoreNET.Net
 
         private void CreateRequest() {
             request = WebRequest.Create(this.Url);
-        }
-
-        private void SetupHeaders() {
-            if (this.Headers != null && this.Headers.Count > 0)
-                request.Headers = this.Headers;
         }
 
         private void SetupContentType() {
@@ -123,9 +120,7 @@ namespace CMCoreNET.Net
         }
 
         private void SetupRequest() {
-            CreateRequest();
             SetRequestMethod();
-            SetupHeaders();
             SetupContentType();
             SetupTimeout();
         }
