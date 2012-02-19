@@ -36,7 +36,7 @@ namespace CMCoreNET.Net
         private System.Timers.Timer requestTimer;
         private int currentResponseTime = 0;
         private SynchronizationContext context;
-        Action<UrlRequestEventArgs> callback;
+        private Action<UrlRequestEventArgs> callback;
 
         #endregion
 
