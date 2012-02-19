@@ -80,6 +80,7 @@ namespace CMCoreTests
             Assert.AreEqual(expected.Length, actual.Length, "Lengths are not equal");
         }
 
+        [TestMethod()]
         public void GetStringTest() {
             byte[] testBytes = Encoding.UTF8.GetBytes(TestString);
 
@@ -87,6 +88,15 @@ namespace CMCoreTests
             string expected = testBytes.GetString();
 
             Assert.AreEqual(expected, actual, "Strings are not equal");
+        }
+
+        [TestMethod()]
+        public void GetInstanceTest() {
+            Type actual = typeof(StringBuilder);
+            var instance = actual.GetInstance();
+            Type expected = instance.GetType();
+
+            Assert.AreEqual(expected.Name, actual.Name, "Instances are incorrect type");
         }
     }
 }

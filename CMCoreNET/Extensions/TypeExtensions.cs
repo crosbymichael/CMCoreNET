@@ -8,8 +8,8 @@ namespace CMCoreNET
 {
     public static class TypeExtensions
     {
-        public static T GetInstance<T>(this Type typeHelper) {
-            return Activator.CreateInstance<T>();
+        public static object GetInstance(this Type typeHelper) {
+            return Activator.CreateInstance(typeHelper);
         }
 
         public static string GetQualifiedName(this Type typeHelper) {
