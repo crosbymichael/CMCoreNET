@@ -30,9 +30,11 @@ namespace CMCoreNET
             if (string.IsNullOrEmpty(url))
                 throw new ArgumentNullException("Url cannot be null or empty");
 
-            UrlRequest request = new UrlRequest();
-            var result = request.LoadSync(url);
-            return UrlRequest.ProcessStreamToString(result.ResponseStream);
+            UrlRequest request = new UrlRequest(url);
+            var response = request.Load();
+            using (TextReader reader = new StreamReader(response.GetResponseStream())) {
+                return reader.ReadToEnd();
+            }
         }
 
         public static string ReplaceWithProperties(this string stringHelper, object property) {

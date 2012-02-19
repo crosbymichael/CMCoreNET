@@ -49,6 +49,8 @@ namespace CMCoreNET.Net
         public WebHeaderCollection Headers { get; set; }
         public CookieCollection Cookies { get; set; }
 
+        public byte[] Data { get { return this.data; } set { this.data = value; } }
+
         #endregion
 
         #region Constructors
@@ -65,8 +67,12 @@ namespace CMCoreNET.Net
 
         #region Public Methods
 
+        public HttpWebResponse Load() {
+            return Load(this.Url, this.RequestMethod, this.data);
+        }
+
         public HttpWebResponse Load(string Url) {
-            return Load(Url, UrlRequestMethod.GET, null);
+            return Load(Url, UrlRequestMethod.GET, this.data);
         }
 
         public HttpWebResponse Load(
@@ -80,7 +86,7 @@ namespace CMCoreNET.Net
 
             SetupRequest();
 
-            if (data != null)
+            if (this.data != null)
                 SendRequestData();
             GetResponse();
             return this.response;
