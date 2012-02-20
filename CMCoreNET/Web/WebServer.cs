@@ -52,6 +52,11 @@ namespace CMCoreNET.Web
             set { this.data = value; }
         }
 
+        public string ContentType {
+            get { return this.request.ContentType; }
+            set { this.request.ContentType = value; }
+        }
+
         #endregion
 
         public WebServer(string path) {
@@ -93,7 +98,8 @@ namespace CMCoreNET.Web
         }
 
         public void AddHeader(HttpRequestHeader name, string value) {
-            this.request.Headers.Add(name, value);
+            if (name != HttpRequestHeader.ContentType)
+                this.request.Headers.Add(name, value);
         }
 
         #endregion
@@ -153,6 +159,12 @@ namespace CMCoreNET.Web
 
         private void DispatchFull() {
             var content = CreateFullResponse();
+            
+            if (context == null) {
+                fullCallback.Invoke(content);
+                return;
+            }
+
             context.Post((o) => {
                 fullCallback.Invoke(content);
             }, null);
@@ -160,6 +172,11 @@ namespace CMCoreNET.Web
 
         private void DispatchSimple() {
             var content = ResponseDataToString();
+            
+            if (context == null) {
+                simpleCallback.Invoke(content);
+                return;
+            }
             context.Post((o) => {
                 simpleCallback.Invoke(content);
             }, null);
