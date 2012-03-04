@@ -64,18 +64,5 @@ namespace CMCoreTests
         //
         #endregion
 
-
-        /// <summary>
-        ///A test for Headers
-        ///</summary>
-        [TestMethod()]
-        public void HeadersTest()
-        {
-            string url = string.Empty; // TODO: Initialize to an appropriate value
-            UrlRequest target = new UrlRequest(url); // TODO: Initialize to an appropriate value
-            WebHeaderCollection actual;
-            actual = target.Headers;
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
     }
 }

@@ -2,39 +2,66 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using CMCoreNET;
 using CMCoreNET.Web;
+using CMCoreNET.Serialization;
 
 namespace DebugTests
 {
     class Program
     {
-        private static WebServer server;
 
         [STAThread]
         static void Main(string[] args)
         {
-            server = new WebServer(@"http://crosbymichael.com");
+            Test(new { Name = "micahel", Age = "25" });
+            /*
+            var testObj = new TestObj();
 
-            Console.WriteLine("Test path:");
-            Console.WriteLine(server.Path);
-            TestHeaders();
-            server.ContentType = "Content-Type:application/json";
+            SerializationAdapter json = SerializationAdapter.GetAdapter(SerializationAdapterType.JSON);
+            SerializationAdapter xml = SerializationAdapter.GetAdapter(SerializationAdapterType.XML);
 
-            server.RegisterSimpleCallback((s) => {
-                Console.WriteLine(s);
-            });
+            string jsonString = json.Serialize(testObj);
+            string xmlString = xml.Serialize(testObj);
 
-            server.Get();
+            Console.WriteLine(xmlString);
+            Console.WriteLine("\n");
+            Console.WriteLine(jsonString);
 
+            TestObj backAgain = json.Deserialize<TestObj>(jsonString);
+
+            json.GetMe();
+            Type t = json.t;
+            Console.WriteLine(t.Name);
+             */
             Console.ReadLine();
+
+            
         }
 
-        static void TestHeaders() {
-            Console.WriteLine("Test headers:");
+        static void Test(object ann) {
+            var properties = ann.GetType().GetProperties().ToList();
 
-            server.AddHeader(System.Net.HttpRequestHeader.ContentType, "json");
-            server.AddHeader(System.Net.HttpRequestHeader.Authorization, "token");
+            foreach (var prop in properties) {
+                Console.WriteLine(prop.Name);
+            }
+        }
+    }
+
+    [Serializable]
+    public class TestObj
+    {
+        public string Name;
+        public List<string> Posts;
+
+        public TestObj() {
+            Name = "mike";
+
+            Posts = new List<string>();
+            Posts.Add("Rails");
+            Posts.Add("C#");
+            Posts.Add("Python");
         }
     }
 }

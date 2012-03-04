@@ -12,7 +12,7 @@ using CMCoreNET.Net;
 
 namespace CMCoreNET.Web
 {
-    public class WebServer
+    public class HttpRequest
     {
         #region Fields
 
@@ -59,7 +59,7 @@ namespace CMCoreNET.Web
 
         #endregion
 
-        public WebServer(string path) {
+        public HttpRequest(string path) {
             this.Path = path;
             this.context = SynchronizationContext.Current;
             CreateRequest();
