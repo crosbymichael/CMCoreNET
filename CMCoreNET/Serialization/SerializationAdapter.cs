@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace CMCoreNET.Serialization
 {
@@ -11,7 +12,7 @@ namespace CMCoreNET.Serialization
         JSON
     }
 
-    public abstract class SerializationAdapter
+    public abstract class SerializationAdapter : IDisposable
     {
         public static SerializationAdapter GetAdapter(SerializationAdapterType type) {
             SerializationAdapter adapter = null;
@@ -31,7 +32,7 @@ namespace CMCoreNET.Serialization
         #region Abstract Members
 
         protected abstract string SerializeData(object data);
-        protected abstract object DeserializeData(byte[] data, Type type);
+        protected abstract object DeserializeData(Stream data, Type type);
 
         #endregion
 
@@ -50,7 +51,16 @@ namespace CMCoreNET.Serialization
         }
         
         public object Deserialize(byte[] data, Type type) {
-            if (data == null)
+            return Deserialize(new MemoryStream(data), type);
+        }
+
+        public object Deserialize(string data, Type type) {
+            return Deserialize(data.GetBytes(), type);
+        }
+
+        public object Deserialize(Stream data, Type type)
+        {
+            if (data == null || data.Length == 0)
                 throw new ArgumentNullException("Data cannot be null");
 
             var dataMember = type.GetCustomAttributesData();
@@ -62,15 +72,16 @@ namespace CMCoreNET.Serialization
             return DeserializeData(data, type);
         }
 
-        public object Deserialize(string data, Type type) {
-            return Deserialize(data.GetBytes(), type);
-        }
-
         #endregion
 
 
         private bool IsSerializable(Type type) {
             return type.IsSerializable;
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

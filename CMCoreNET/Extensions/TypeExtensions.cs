@@ -34,5 +34,11 @@ namespace CMCoreNET
             objlist.ForEach(o => attrs.Add((System.Attribute)o));
             return attrs;
         }
+
+        public static bool ImplementsInterface<T>(this Type typeHelper)
+        {
+            var iface = typeHelper.GetInterface(string.Format("{0}.{1}", typeof(T).Namespace, typeof(T).Name), true);
+            return (iface == null) ? false : true;
+        }
     }
 }

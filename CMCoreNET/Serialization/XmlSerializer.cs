@@ -13,7 +13,7 @@ namespace CMCoreNET.Serialization
             string xml = null;
             System.Xml.Serialization.XmlSerializer serializer =
                 new System.Xml.Serialization.XmlSerializer(data.GetType());
-
+            
             using (MemoryStream stream = new MemoryStream())
             {
                 serializer.Serialize(stream, data);
@@ -24,16 +24,14 @@ namespace CMCoreNET.Serialization
             return xml;
         }
 
-        protected override object DeserializeData(byte[] data, Type type)
+        protected override object DeserializeData(Stream data, Type type)
         {
             object dataObject = null;
             System.Xml.Serialization.XmlSerializer serializer =
                 new System.Xml.Serialization.XmlSerializer(type);
-
-            using (MemoryStream stream = new MemoryStream(data))
-            {
-                dataObject = serializer.Deserialize(stream);
-            }
+            
+            data.Position = 0;
+            dataObject = serializer.Deserialize(data);
 
             return dataObject;
         }

@@ -23,16 +23,14 @@ namespace CMCoreNET.Serialization
             return json;
         }
 
-        protected override object DeserializeData(byte[] data, Type type)
+        protected override object DeserializeData(Stream data, Type type)
         {
             object deserializedObject = null;
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(type);
-
-            using (MemoryStream stream = new MemoryStream(data))
-            {
-                deserializedObject = serializer.ReadObject(stream);
-            }
-
+            
+            data.Position = 0;
+            deserializedObject = serializer.ReadObject(data);
+          
             return deserializedObject;
         }
     }

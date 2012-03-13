@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Builders\BuildDirector.cs" />
     <Compile Include="Builders\BuilderCollection.cs" />
+    <Compile Include="Builders\ModelBuildDirector.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
