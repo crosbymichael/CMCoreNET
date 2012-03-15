@@ -39,21 +39,21 @@ namespace CMCoreNET
 
         public static string ReplaceWithProperties(this string stringHelper, object property) {
             if (property == null) return null;
-            StringBuilder sb = new StringBuilder();
-            sb.Append(stringHelper);
+            string buffer = stringHelper;
+
             PropertyInfo[] pi = property.GetType().GetProperties();
 
             foreach (var p in pi) {
                 string name = ("{" + p.Name + "}");
                 if (p.PropertyType == typeof(String)) {
-                    if (stringHelper.Contains(name)) {
+                    if (buffer.Contains(name)) {
                         string value = p.GetValue(property, null) as string;
-                        sb.Replace(name, value);
+                        buffer = buffer.Replace(name, value);
                     }
                 }
             }
 
-            return sb.ToString();
+            return buffer;
         }
     }
 }

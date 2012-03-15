@@ -8,11 +8,11 @@ namespace CMCoreNET.Builders
 {
     public class BuilderCollection<T> : IDisposable
     {
-        private Dictionary<Type, List<T>> builders;
+        private Dictionary<string, List<T>> builders;
         private T defaultBuilder;
 
         public BuilderCollection() {
-            builders = new Dictionary<Type, List<T>>();
+            builders = new Dictionary<string, List<T>>();
         }
 
         public T DefaultBuilder
@@ -28,18 +28,26 @@ namespace CMCoreNET.Builders
         /// <typeparam name="MType"></typeparam>
         /// <returns></returns>
         public IEnumerable<T> GetBuildersForType(Type type) {
-            return this.builders[type];
+            return this.builders[type.Name];
         }
 
         public void Add(Type modelType, T builder)
         {
-            var builderList = this.builders[modelType];
+            List<T> builderList = null;
+            if (builders.Keys.Count > 0)
+            {
+                builderList = this.builders
+                    .Where(m => m.Key == modelType.Name)
+                    .FirstOrDefault()
+                    .Value;
+            }
+
             if (builderList == null)
             {
                 List<T> list = new List<T>();
                 list.Add(this.defaultBuilder);
                 list.Add(builder);
-                this.builders[modelType] = list;
+                this.builders[modelType.Name] = list;
                 return;
             }
 
@@ -58,7 +66,7 @@ namespace CMCoreNET.Builders
 
         public void  Dispose()
         {
-            foreach (Type key in this.builders.Keys)
+            foreach (string key in this.builders.Keys)
             {
                 this.builders.Remove(key);
             }
