@@ -41,5 +41,10 @@ namespace CMCoreNET
             }
             return hash;
         }
+
+        public static T Pop<T>(this T helper) where T : IEnumerable<T>
+        {
+            return helper.ElementAt(helper.Count());
+        }
     }
 }

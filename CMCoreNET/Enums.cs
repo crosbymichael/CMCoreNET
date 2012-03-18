@@ -5,12 +5,5 @@ using System.Text;
 
 namespace CMCoreNET
 {
-    public enum UrlRequestMethod
-    {
-        POST,
-        GET,
-        PUT,
-        OPTION,
-        HEAD
-    }
+    
 }

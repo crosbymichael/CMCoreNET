@@ -13,6 +13,15 @@ namespace CMCoreNET.Net
     /// </summary>
     public class UrlRequest
     {
+        public enum UrlRequestMethod
+        {
+            POST,
+            GET,
+            PUT,
+            OPTION,
+            HEAD
+        }
+
         #region Fields
 
         private UrlRequestMethod? method;
@@ -29,36 +38,50 @@ namespace CMCoreNET.Net
         public string ContentType { get; set; }
         public string Url { get; set; }
 
-        public UrlRequestMethod? RequestMethod {
+        public UrlRequestMethod? RequestMethod
+        {
             get { return this.method; }
             set { this.method = value; }
         }
 
-        public int Timeout {
+        public int Timeout 
+        {
             get { return this.timeout; }
             set { this.timeout = value; }
         }
 
-        public WebHeaderCollection Headers {
+        public WebHeaderCollection Headers
+        {
             get {
                 return this.request.Headers;
             }
         }
 
-        public CookieCollection Cookies {
+        public CookieCollection Cookies 
+        {
             get {
                 if (this.cookies == null) this.cookies = new CookieCollection();
                 return this.cookies;
             }
         }
 
-        public byte[] Data { get { return this.data; } set { this.data = value; } }
+        public byte[] Data 
+        {
+            get { return this.data; } 
+            set { this.data = value; }
+        }
 
         #endregion
 
         #region Constructors
 
-        public UrlRequest(string url) {
+        public UrlRequest()
+        { 
+            
+        }
+
+        public UrlRequest(string url) 
+        {
             this.Url = url;
             CreateRequest();
         }
@@ -67,11 +90,13 @@ namespace CMCoreNET.Net
 
         #region Public Methods
 
-        public HttpWebResponse Load() {
+        public HttpWebResponse Load()
+        {
             return Load(this.Url, this.RequestMethod, this.data);
         }
 
-        public HttpWebResponse Load(string Url) {
+        public HttpWebResponse Load(string Url) 
+        {
             return Load(Url, UrlRequestMethod.GET, this.data);
         }
 
@@ -87,7 +112,9 @@ namespace CMCoreNET.Net
             SetupRequest();
 
             if (this.data != null)
+            {
                 SendRequestData();
+            }
             GetResponse();
             return this.response;
         }
@@ -96,43 +123,55 @@ namespace CMCoreNET.Net
 
         #endregion
 
-
         #region Private Methods
 
-        private void CreateRequest() {
+        private void CreateRequest() 
+        {
             request = WebRequest.Create(this.Url);
         }
 
-        private void SetupContentType() {
+        private void SetupContentType() 
+        {
             if (!string.IsNullOrEmpty(this.ContentType))
+            {
                 request.ContentType = this.ContentType;
+            }
         }
 
-        private void SetRequestMethod() {
+        private void SetRequestMethod() 
+        {
             request.Method = (this.RequestMethod == null) ?
                 UrlRequestMethod.GET.ToString() :
                 this.RequestMethod.ToString();
         }
 
-        private void SetupTimeout() {
+        private void SetupTimeout() 
+        {
             if (this.timeout != 0)
                 request.Timeout = timeout;
         }
 
-        private void SetupRequest() {
+        private void SetupRequest() 
+        {
+            if (request == null)
+            {
+                CreateRequest();
+            }
             SetRequestMethod();
             SetupContentType();
             SetupTimeout();
         }
 
-        private void SendRequestData() {
+        private void SendRequestData() 
+        {
             request.ContentLength = this.data.Length;
             Stream streamToWrite = request.GetRequestStream();
             streamToWrite.Write(this.data, 0, this.data.Length);
             streamToWrite.Close();
         }
 
-        private void GetResponse() {
+        private void GetResponse()
+        {
             response = this.request.GetResponse() as HttpWebResponse;
         }
 

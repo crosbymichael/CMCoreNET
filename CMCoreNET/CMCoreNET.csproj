@@ -61,7 +61,6 @@
     <Compile Include="Serialization\JsonSerializer.cs" />
     <Compile Include="Serialization\SerializationAdapter.cs" />
     <Compile Include="Serialization\XmlSerializer.cs" />
-    <Compile Include="Web\HttpRequest.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

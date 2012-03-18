@@ -29,7 +29,7 @@ namespace CMCoreNET.Serialization
             object dataObject = null;
             System.Xml.Serialization.XmlSerializer serializer =
                 new System.Xml.Serialization.XmlSerializer(type);
-            
+
             data.Position = 0;
             dataObject = serializer.Deserialize(data);
 

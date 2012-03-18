@@ -26,15 +26,44 @@ namespace CMCoreNET.Security
                 .Create(HashingAlgorithm.SHA256), value);
         }
 
+        public static string MD5(byte[] value)
+        {
+            return CreateHash(
+                HashFactory.Create(HashingAlgorithm.MD5),
+                value);
+        }
+
+        public static string SHA1(byte[] value)
+        {
+            return CreateHash(
+                HashFactory.Create(HashingAlgorithm.SHA1),
+                value);
+        }
+
+        public static string SHA256(byte[] value)
+        {
+            return CreateHash(
+                HashFactory.Create(HashingAlgorithm.SHA256),
+                value);
+        }
+
         #endregion
 
         #region Private Methods
 
         private static string CreateHash(
-            HashAlgorithm hashingAlgorithm, 
-            string value) {
-                return HexDigest(
-                    hashingAlgorithm.ComputeHash(value.GetBytes()));
+            HashAlgorithm algo,
+            byte[] value)
+        {
+            return HexDigest(
+                    algo.ComputeHash(value));
+        }
+
+        private static string CreateHash(
+            HashAlgorithm algo, 
+            string value) 
+        {
+            return CreateHash(algo, value.GetBytes());
         }
 
         private static string HexDigest(byte[] value) {
