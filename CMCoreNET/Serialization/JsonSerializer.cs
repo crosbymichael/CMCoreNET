@@ -11,7 +11,7 @@ namespace CMCoreNET.Serialization
     {
         protected override string SerializeData(object data)
         {
-            string json = null;
+            string json;
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(data.GetType());
 
             using (MemoryStream stream = new MemoryStream())
