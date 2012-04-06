@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.IO;
 using CMCoreNET.Net;
+using CMCoreNET.Serialization;
 
 namespace CMCoreNET
 {
@@ -54,6 +55,30 @@ namespace CMCoreNET
             }
 
             return buffer;
+        }
+
+        public static T JsonTo<T>(this string helper)
+        {
+            if (string.IsNullOrEmpty(helper))
+            {
+                throw new ArgumentNullException();
+            }
+            return GetObject<T>(helper, SerializationAdapterType.JSON);
+        }
+
+        public static T XmlTo<T>(this string helper)
+        {
+            if (string.IsNullOrEmpty(helper))
+            {
+                throw new ArgumentNullException();
+            }
+            return GetObject<T>(helper, SerializationAdapterType.XML);
+        }
+
+        private static T GetObject<T>(string contents, SerializationAdapterType type)
+        {
+            var adapter = SerializationAdapter.GetAdapter(type);
+            return (T)adapter.Deserialize(contents, typeof(T));
         }
     }
 }

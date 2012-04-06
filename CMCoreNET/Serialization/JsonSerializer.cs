@@ -13,7 +13,7 @@ namespace CMCoreNET.Serialization
         {
             string json;
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(data.GetType());
-
+            
             using (MemoryStream stream = new MemoryStream())
             {
                 serializer.WriteObject(stream, data);

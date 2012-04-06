@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CMCoreNET.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace CMCoreNET
 {
@@ -45,6 +46,25 @@ namespace CMCoreNET
         public static T Pop<T>(this T helper) where T : IEnumerable<T>
         {
             return helper.ElementAt(helper.Count());
+        }
+
+        public static bool IsValid<T>(this T helper) where T : class
+        { 
+            bool isValid = true;
+
+            try
+            {
+                Validator.ValidateObject(
+                    helper, 
+                    new ValidationContext(helper, null, null),
+                    true);
+            }
+            catch 
+            { 
+                isValid = false; 
+            }
+            
+            return isValid;
         }
     }
 }
