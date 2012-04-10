@@ -12,7 +12,6 @@ namespace CMCoreNET.Security
 
     public class TrialProvider : ITrial
     {
-        private const int DAYS_VALID = 30;
         private DateTime INVALID_DATE;
 
         public TrialProvider(DateTime invalidDate)

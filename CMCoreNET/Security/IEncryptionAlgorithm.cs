@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace CMCoreNET.Security
 {
@@ -13,5 +14,7 @@ namespace CMCoreNET.Security
 
         byte[] Encrypt(byte[] dataToEncrypt);
         byte[] Decrypt(byte[] encryptedData);
+        //Stream Encrypt(Stream dataStream);
+        //Stream Decrypt(Stream dataStream);
     }
 }

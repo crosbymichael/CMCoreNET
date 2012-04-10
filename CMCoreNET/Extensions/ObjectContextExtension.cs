@@ -5,7 +5,7 @@ using System.Text;
 using System.Data.Objects;
 using CMCoreNET.Data;
 
-namespace CMCoreNET.Extensions
+namespace CMCoreNET
 {
     public static class ObjectContextExtension
     {

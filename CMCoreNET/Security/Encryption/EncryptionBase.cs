@@ -94,6 +94,15 @@ namespace CMCoreNET.Security.Encryption
             }
         }
 
+        private void EncryptData(Stream dataStream)
+        {
+            using (CryptoStream cryptoStream = new CryptoStream(dataStream, this.cryptor, CryptoStreamMode.Write))
+            {
+                cryptoStream.Write(this.Data, 0, this.Data.Length);
+                cryptoStream.Close();
+            }
+        }
+
         private void DecryptData() {
             using (MemoryStream dataStream = new MemoryStream()) {
                 using (CryptoStream cryptoStream = new CryptoStream(dataStream, this.cryptor, CryptoStreamMode.Write)) {

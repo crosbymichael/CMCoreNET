@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CMCoreNET.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace CMCoreNET
 {
@@ -41,6 +42,20 @@ namespace CMCoreNET
                 hash = hash ^ value.GetHashCode();
             }
             return hash;
+        }
+
+        public static string DynamicToString(this object helper)
+        {
+            var sb = new StringBuilder();
+
+            helper.GetType().GetProperties(
+                BindingFlags.Public | 
+                BindingFlags.GetProperty)
+                .ToList().ForEach(p => 
+            {
+                sb.AppendLine(p.GetValue(helper, null).ToString());
+            });
+            return sb.ToString();
         }
 
         public static T Pop<T>(this T helper) where T : IEnumerable<T>

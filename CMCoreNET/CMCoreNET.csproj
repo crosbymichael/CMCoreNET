@@ -55,6 +55,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="Mappers\MapperBucket.cs" />
     <Compile Include="Mappers\ObjectMapper.cs" />
     <Compile Include="Net\EmailService.cs" />
     <Compile Include="Net\UrlRequest.cs" />
