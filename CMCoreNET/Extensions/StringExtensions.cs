@@ -75,6 +75,11 @@ namespace CMCoreNET
             return GetObject<T>(helper, SerializationAdapterType.XML);
         }
 
+        public static T AsEnum<T>(this string helper)
+        {
+            return (T)Enum.Parse(typeof(T), helper);
+        }
+
         private static T GetObject<T>(string contents, SerializationAdapterType type)
         {
             var adapter = SerializationAdapter.GetAdapter(type);
