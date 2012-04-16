@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 namespace CMCoreNET.Net
 {
     
@@ -27,7 +29,7 @@ namespace CMCoreNET.Net
         private UrlRequestMethod? method;
         private byte[] data;
         private int timeout = 0;
-        private WebRequest request;
+        private HttpWebRequest request;
         private HttpWebResponse response;
         private CookieCollection cookies;
 
@@ -52,14 +54,16 @@ namespace CMCoreNET.Net
 
         public WebHeaderCollection Headers
         {
-            get {
+            get 
+            {
                 return this.request.Headers;
             }
         }
 
         public CookieCollection Cookies 
         {
-            get {
+            get 
+            {
                 if (this.cookies == null) this.cookies = new CookieCollection();
                 return this.cookies;
             }
@@ -119,7 +123,13 @@ namespace CMCoreNET.Net
             return this.response;
         }
 
-        
+        public void AcceptSSLValidationDelegate(
+            RemoteCertificateValidationCallback validationDelegate)
+        {
+            ServicePointManager.ServerCertificateValidationCallback += 
+                new RemoteCertificateValidationCallback(validationDelegate);
+            this.request.AllowAutoRedirect = true;
+        }
 
         #endregion
 
@@ -127,7 +137,7 @@ namespace CMCoreNET.Net
 
         private void CreateRequest() 
         {
-            request = WebRequest.Create(this.Url);
+            request = (HttpWebRequest)HttpWebRequest.Create(this.Url);
         }
 
         private void SetupContentType() 
