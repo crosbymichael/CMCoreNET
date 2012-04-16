@@ -85,5 +85,17 @@ namespace CMCoreNET
             var adapter = SerializationAdapter.GetAdapter(type);
             return (T)adapter.Deserialize(contents, typeof(T));
         }
+
+        public static void ForEachLine(this string helper, Action<string> action)
+        {
+            using (StringReader reader = new StringReader(helper))
+            {
+                string line = null;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    action(line);
+                }
+            }
+        }
     }
 }

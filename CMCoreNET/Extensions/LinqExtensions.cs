@@ -8,7 +8,9 @@ namespace CMCoreNET
 {
     public static class LinqExtensions
     {
-        public static void ForEach<T>(this IEnumerable<T> helper, Action<T> action)
+        public static void ForEach<T>(
+            this IEnumerable<T> helper, 
+            Action<T> action)
         {
             foreach (T item in helper)
             {
