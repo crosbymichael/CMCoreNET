@@ -77,6 +77,10 @@ namespace CMCoreNET
 
         public static T AsEnum<T>(this string helper)
         {
+            if (string.IsNullOrEmpty(helper))
+            {
+                return default(T);
+            }
             return (T)Enum.Parse(typeof(T), helper);
         }
 

@@ -32,6 +32,7 @@ namespace CMCoreNET.Net
         private HttpWebRequest request;
         private HttpWebResponse response;
         private CookieCollection cookies;
+        WebHeaderCollection headers;
 
         #endregion
 
@@ -56,7 +57,10 @@ namespace CMCoreNET.Net
         {
             get 
             {
-                return this.request.Headers;
+                if (this.headers == null)
+                    this.headers = new WebHeaderCollection();
+
+                return this.headers;
             }
         }
 
@@ -167,6 +171,12 @@ namespace CMCoreNET.Net
             {
                 CreateRequest();
             }
+
+            if (this.headers != null)
+            {
+                request.Headers = this.headers;
+            }
+
             SetRequestMethod();
             SetupContentType();
             SetupTimeout();

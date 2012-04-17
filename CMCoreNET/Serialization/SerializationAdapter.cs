@@ -9,14 +9,16 @@ namespace CMCoreNET.Serialization
 {
     public enum SerializationAdapterType {
         XML,
-        JSON
+        JSON,
+        BINARY
     }
 
     public abstract class SerializationAdapter : IDisposable
     {
         public static SerializationAdapter GetAdapter(SerializationAdapterType type) {
             SerializationAdapter adapter = null;
-            switch (type) { 
+            switch (type)
+            { 
                 case SerializationAdapterType.XML:
                     adapter = new XmlSerializer();
                     break;
@@ -39,7 +41,8 @@ namespace CMCoreNET.Serialization
 
         #region Public Members
 
-        public string Serialize(object data) {
+        public string Serialize(object data)
+        {
             if (data == null)
                 throw new ArgumentNullException("Data cannot be null");
             
