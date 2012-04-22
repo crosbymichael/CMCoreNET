@@ -13,41 +13,52 @@ namespace CMCoreNET
     {
         public static byte[] GetBytes(this string stringHelper)
         {
-            if (string.IsNullOrEmpty(stringHelper)) return null;
+            if (string.IsNullOrEmpty(stringHelper)) 
+                return null;
+
             return Encoding.Default.GetBytes(stringHelper);
         }
 
-        public static string InitWithFile(this string stringHelper, string filePath) {
+        public static string InitWithFile(this string stringHelper, string filePath) 
+        {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException("File path cannot be null or empty");
+           
             if (!File.Exists(filePath)) return string.Empty;
 
-            using (TextReader reader = new StreamReader(filePath)) {
+            using (TextReader reader = new StreamReader(filePath))
+            {
                 return reader.ReadToEnd();
             }
         }
 
-        public static string InitWithUrl(this string stringHelper, string url) {
+        public static string InitWithUrl(this string stringHelper, string url) 
+        {
             if (string.IsNullOrEmpty(url))
                 throw new ArgumentNullException("Url cannot be null or empty");
 
             UrlRequest request = new UrlRequest(url);
             var response = request.Load();
-            using (TextReader reader = new StreamReader(response.GetResponseStream())) {
+            using (TextReader reader = new StreamReader(response.GetResponseStream())) 
+            {
                 return reader.ReadToEnd();
             }
         }
 
-        public static string ReplaceWithProperties(this string stringHelper, object property) {
+        public static string ReplaceWithProperties(this string stringHelper, object property) 
+        {
             if (property == null) return null;
             string buffer = stringHelper;
 
             PropertyInfo[] pi = property.GetType().GetProperties();
 
-            foreach (var p in pi) {
+            foreach (var p in pi)
+            {
                 string name = ("{" + p.Name + "}");
-                if (p.PropertyType == typeof(String)) {
-                    if (buffer.Contains(name)) {
+                if (p.PropertyType == typeof(String)) 
+                {
+                    if (buffer.Contains(name))
+                    {
                         string value = p.GetValue(property, null) as string;
                         buffer = buffer.Replace(name, value);
                     }
@@ -81,7 +92,7 @@ namespace CMCoreNET
             {
                 return default(T);
             }
-            return (T)Enum.Parse(typeof(T), helper);
+            return (T)Enum.Parse(typeof(T), helper, true);
         }
 
         private static T GetObject<T>(string contents, SerializationAdapterType type)

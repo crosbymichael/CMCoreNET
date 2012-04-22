@@ -8,59 +8,73 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 namespace CMCoreNET.Net
 {
-    
+    public enum UrlRequestMethod
+    {
+        POST,
+        GET,
+        PUT,
+        OPTION,
+        HEAD
+    }
+
     /// <summary>
     /// UrlRequest
     /// Request a stream to a url on the internet or network.
     /// </summary>
     public class UrlRequest
     {
-        public enum UrlRequestMethod
-        {
-            POST,
-            GET,
-            PUT,
-            OPTION,
-            HEAD
-        }
-
         #region Fields
 
-        private UrlRequestMethod? method;
-        private byte[] data;
-        private int timeout = 0;
-        private HttpWebRequest request;
-        private HttpWebResponse response;
-        private CookieCollection cookies;
+        CookieCollection cookies;
         WebHeaderCollection headers;
 
         #endregion
 
         #region Properties
 
-        public string ContentType { get; set; }
+        
         public string Url { get; set; }
-
-        public UrlRequestMethod? RequestMethod
+        public UrlRequestMethod? RequestMethod { get; set; }
+        public int Timeout { get; set; }
+        public byte[] Data { get; set; }
+        public bool AllowAutoRedirect { get; set; }
+        
+        public string UserAgent 
         {
-            get { return this.method; }
-            set { this.method = value; }
+            get 
+            {
+                return Headers["User-Agent"];
+            }
+
+            set
+            {
+                Headers["User-Agent"] = value;
+            }
         }
 
-        public int Timeout 
+        public string ContentType
         {
-            get { return this.timeout; }
-            set { this.timeout = value; }
+            get
+            {
+                return Headers["Content-Type"];
+            }
+            
+            set
+            {
+                Headers["Content-Type"] = value;
+            }
         }
 
         public WebHeaderCollection Headers
         {
             get 
             {
-                if (this.headers == null)
-                    this.headers = new WebHeaderCollection();
+                if (headers == null)
+                {
+                    headers = new WebHeaderCollection();
+                }
 
-                return this.headers;
+                return headers;
             }
         }
 
@@ -68,15 +82,26 @@ namespace CMCoreNET.Net
         {
             get 
             {
-                if (this.cookies == null) this.cookies = new CookieCollection();
-                return this.cookies;
+                if (cookies == null)
+                {
+                    cookies = new CookieCollection();
+                }
+
+                return cookies;
             }
         }
 
-        public byte[] Data 
+        public int ContentLenght
         {
-            get { return this.data; } 
-            set { this.data = value; }
+            get
+            { 
+                int lenght = 0;
+                if (Data != null)
+                {
+                    lenght = Data.Length;
+                }
+                return lenght;
+            }
         }
 
         #endregion
@@ -91,7 +116,7 @@ namespace CMCoreNET.Net
         public UrlRequest(string url) 
         {
             this.Url = url;
-            CreateRequest();
+            AllowAutoRedirect = true;
         }
 
         #endregion
@@ -100,99 +125,86 @@ namespace CMCoreNET.Net
 
         public HttpWebResponse Load()
         {
-            return Load(this.Url, this.RequestMethod, this.data);
-        }
-
-        public HttpWebResponse Load(string Url) 
-        {
-            return Load(Url, UrlRequestMethod.GET, this.data);
-        }
-
-        public HttpWebResponse Load(
-            string Url, 
-            UrlRequestMethod? method,
-            byte[] data) {
-
-            this.Url = Url;
-            this.RequestMethod = method;
-            this.data = data;
-
-            SetupRequest();
-
-            if (this.data != null)
+            if (string.IsNullOrEmpty(Url))
             {
-                SendRequestData();
+                throw new InvalidOperationException("Url is required");
             }
-            GetResponse();
-            return this.response;
+            return Load(Url, RequestMethod, Data);
         }
 
-        public void AcceptSSLValidationDelegate(
-            RemoteCertificateValidationCallback validationDelegate)
+        public HttpWebResponse Load(string url) 
         {
-            ServicePointManager.ServerCertificateValidationCallback += 
-                new RemoteCertificateValidationCallback(validationDelegate);
-            this.request.AllowAutoRedirect = true;
+            return Load(url, RequestMethod, Data);
+        }
+
+        public HttpWebResponse Load(string url, UrlRequestMethod? method, byte[] data) 
+        {
+            Url = url;
+            RequestMethod = method;
+            Data = data;
+
+            HttpWebRequest request = BuildRequest();
+            
+            if (Data != null && Data.Length > 0)
+            {
+                SendRequestData(request);
+            }
+
+            return GetWebResponse(request);
+        }
+
+        public void AcceptSSLValidationDelegate(RemoteCertificateValidationCallback validationDelegate)
+        {
+            ServicePointManager.ServerCertificateValidationCallback += new RemoteCertificateValidationCallback(validationDelegate);
         }
 
         #endregion
 
         #region Private Methods
 
-        private void CreateRequest() 
+        HttpWebRequest BuildRequest() 
         {
-            request = (HttpWebRequest)HttpWebRequest.Create(this.Url);
-        }
+            var request = (HttpWebRequest)HttpWebRequest.Create(this.Url);
 
-        private void SetupContentType() 
-        {
-            if (!string.IsNullOrEmpty(this.ContentType))
+            if (Headers != null)
             {
-                request.ContentType = this.ContentType;
-            }
-        }
-
-        private void SetRequestMethod() 
-        {
-            request.Method = (this.RequestMethod == null) ?
-                UrlRequestMethod.GET.ToString() :
-                this.RequestMethod.ToString();
-        }
-
-        private void SetupTimeout() 
-        {
-            if (this.timeout != 0)
-                request.Timeout = timeout;
-        }
-
-        private void SetupRequest() 
-        {
-            if (request == null)
-            {
-                CreateRequest();
+                request.Headers = Headers;
             }
 
-            if (this.headers != null)
+            request.Method = GetRequestMethod();
+
+            if (Timeout != 0)
             {
-                request.Headers = this.headers;
+                request.Timeout = Timeout;
             }
 
-            SetRequestMethod();
-            SetupContentType();
-            SetupTimeout();
+            request.AllowAutoRedirect = AllowAutoRedirect;
+
+            return request;
         }
 
-        private void SendRequestData() 
+        string GetRequestMethod()
         {
-            request.ContentLength = this.data.Length;
+            if (!RequestMethod.HasValue)
+            {
+                return UrlRequestMethod.GET.ToString();
+            }
+
+            return RequestMethod.ToString();
+        }
+
+        void SendRequestData(HttpWebRequest request) 
+        {
+            request.ContentLength = Data.Length;
+
             Stream streamToWrite = request.GetRequestStream();
-            streamToWrite.Write(this.data, 0, this.data.Length);
+            streamToWrite.Write(Data, 0, Data.Length);
             streamToWrite.Close();
         }
 
-        private void GetResponse()
+        HttpWebResponse GetWebResponse(HttpWebRequest request)
         {
-            response = this.request.GetResponse() as HttpWebResponse;
+            return request.GetResponse() as HttpWebResponse;
         }
 
         #endregion
