@@ -86,7 +86,6 @@ namespace CMCoreNET.Net
                 {
                     cookies = new CookieCollection();
                 }
-
                 return cookies;
             }
         }
@@ -115,7 +114,7 @@ namespace CMCoreNET.Net
 
         public UrlRequest(string url) 
         {
-            this.Url = url;
+            Url = url;
             AllowAutoRedirect = true;
         }
 
@@ -164,7 +163,7 @@ namespace CMCoreNET.Net
 
         HttpWebRequest BuildRequest() 
         {
-            var request = (HttpWebRequest)HttpWebRequest.Create(this.Url);
+            var request = (HttpWebRequest)HttpWebRequest.Create(Url);
 
             if (Headers != null)
             {
