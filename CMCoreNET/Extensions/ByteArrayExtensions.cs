@@ -10,7 +10,8 @@ namespace CMCoreNET
     {
         public static string GetString(this byte[] byteArrayHelper)
         {
-            if (byteArrayHelper == null) return null;
+            if (byteArrayHelper == null) 
+                return null;
             return Encoding.Default.GetString(byteArrayHelper);
         }
 

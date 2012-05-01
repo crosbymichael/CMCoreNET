@@ -9,11 +9,12 @@ namespace CMCoreNET.Data
     {
          #region Singleton
 
-        private static SQLCEIdentity instance;
+        static SQLCEIdentity instance;
 
         static SQLCEIdentity()
         {
-            instance = new SQLCEIdentity();
+            if (instance == null)
+                instance = new SQLCEIdentity();
         }
 
         public static SQLCEIdentity Instance

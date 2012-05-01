@@ -8,7 +8,8 @@ namespace CMCoreNET
 {
     public static class TypeExtensions
     {
-        public static object GetInstance(this Type typeHelper) {
+        public static object GetInstance(this Type typeHelper) 
+        {
             string name = typeHelper.Name;
             if (name == typeof(string).Name || name == typeof(String).Name)
                 return string.Empty;
@@ -18,11 +19,13 @@ namespace CMCoreNET
                 return Activator.CreateInstance(typeHelper);
         }
 
-        public static string GetQualifiedName(this Type typeHelper) {
+        public static string GetQualifiedName(this Type typeHelper) 
+        {
             return string.Format("{0}.{1}", typeHelper.Namespace, typeHelper.Name);
         }
 
-        public static System.Attribute GetAttributeOfType<T>(this Type helper) {
+        public static System.Attribute GetAttributeOfType<T>(this Type helper) 
+        {
             return (System.Attribute)helper.GetCustomAttributes(typeof(T), false).ToList().FirstOrDefault();
         }
 

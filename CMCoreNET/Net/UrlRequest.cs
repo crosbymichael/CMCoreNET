@@ -26,7 +26,7 @@ namespace CMCoreNET.Net
         #region Fields
 
         CookieCollection cookies;
-        WebHeaderCollection headers;
+        Dictionary<string, string> headers;
 
         #endregion
 
@@ -52,26 +52,13 @@ namespace CMCoreNET.Net
             }
         }
 
-        public string ContentType
-        {
-            get
-            {
-                return Headers["Content-Type"];
-            }
-            
-            set
-            {
-                Headers["Content-Type"] = value;
-            }
-        }
-
-        public WebHeaderCollection Headers
+        public IDictionary<string, string> Headers
         {
             get 
             {
                 if (headers == null)
                 {
-                    headers = new WebHeaderCollection();
+                    headers = new Dictionary<string, string>();
                 }
 
                 return headers;
@@ -164,10 +151,20 @@ namespace CMCoreNET.Net
         HttpWebRequest BuildRequest() 
         {
             var request = (HttpWebRequest)HttpWebRequest.Create(Url);
+            var visitor = new HeaderVisitor();
+            visitor.Visit(this);
 
-            if (Headers != null)
+            if (visitor.HasHeaders)
             {
-                request.Headers = Headers;
+                foreach (var header in visitor.Headers)
+                {
+                    request.Headers.Add(header.Key, header.Value);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(visitor.ContentType))
+            {
+                request.ContentType = visitor.ContentType;
             }
 
             request.Method = GetRequestMethod();
@@ -204,6 +201,49 @@ namespace CMCoreNET.Net
         HttpWebResponse GetWebResponse(HttpWebRequest request)
         {
             return request.GetResponse() as HttpWebResponse;
+        }
+
+        #endregion
+
+        #region Inner Class
+
+        class HeaderVisitor
+        {
+            public Dictionary<string, string> Headers
+            {
+                get;
+                private set;
+            }
+
+            public string ContentType { get; private set; }
+            public bool HasHeaders { get; private set; }
+
+            public void Visit(UrlRequest request)
+            {
+                if (request.Headers != null && request.Headers.Any())
+                {
+                    HasHeaders = true;
+                    Headers = new Dictionary<string, string>();
+                    var itemsToRemove = new List<string>();
+
+                    foreach (var header in request.Headers)
+                    {
+                        if (header.Key.ToLower() == "content-type")
+                        {
+                            ContentType = header.Value;
+                            itemsToRemove.Add(header.Key);
+                        }
+                        Headers.Add(header.Key, header.Value);
+                    }
+
+                    itemsToRemove.ForEach(i => Headers.Remove(i));
+
+                    if (Headers.Count() == 0)
+                    {
+                        HasHeaders = false;
+                    }
+                }
+            }
         }
 
         #endregion

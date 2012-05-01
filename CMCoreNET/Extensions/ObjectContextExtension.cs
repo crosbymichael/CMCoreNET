@@ -21,7 +21,7 @@ namespace CMCoreNET
             SQLCEIdentity.Instance.RegisterInitalIdentity<S>(initalCount);
         }
 
-        public static int GetIdentity<S>(this S objectSet)
+        public static int GetIdentity<S>(this S objectSet) where S : class
         {
             return SQLCEIdentity.Instance.GetIdentity<S>();
         }
