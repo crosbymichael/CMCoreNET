@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 using CMCoreNET;
+using System.IO;
 
 namespace CMCoreNET.Security
 {
@@ -47,6 +48,27 @@ namespace CMCoreNET.Security
                 value);
         }
 
+        public static string MD5(Stream value)
+        {
+            return CreateHash(
+                HashFactory.Create(HashingAlgorithm.MD5),
+                value);
+        }
+
+        public static string SHA1(Stream value)
+        {
+            return CreateHash(
+                HashFactory.Create(HashingAlgorithm.SHA1),
+                value);
+        }
+
+        public static string SHA256(Stream value)
+        {
+            return CreateHash(
+                HashFactory.Create(HashingAlgorithm.SHA256),
+                value);
+        }
+
         #endregion
 
         #region Private Methods
@@ -54,6 +76,14 @@ namespace CMCoreNET.Security
         private static string CreateHash(
             HashAlgorithm algo,
             byte[] value)
+        {
+            return HexDigest(
+                    algo.ComputeHash(value));
+        }
+
+        private static string CreateHash(
+            HashAlgorithm algo,
+            Stream value)
         {
             return HexDigest(
                     algo.ComputeHash(value));
