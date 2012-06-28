@@ -112,5 +112,18 @@ namespace CMCoreNET
                 }
             }
         }
+
+        public static string FromBase64(this string helper)
+        {
+            return Convert
+                .FromBase64String(helper)
+                .GetString();
+        }
+
+        public static string ToBase64(this string helper)
+        {
+            return Convert
+                .ToBase64String(helper.GetBytes());
+        }
     }
 }
