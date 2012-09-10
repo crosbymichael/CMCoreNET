@@ -16,8 +16,8 @@ namespace CMCoreNET.Security.Encryption
 
     public abstract class EncryptionBase<T> : IDisposable where T : System.Security.Cryptography.SymmetricAlgorithm
     {
-        private T Algorithm { get; set; }
-        private ICryptoTransform cryptor;
+        T Algorithm { get; set; }
+        ICryptoTransform cryptor;
 
         protected string _key;
         protected string _iv;
@@ -39,14 +39,14 @@ namespace CMCoreNET.Security.Encryption
             DecryptData();
         }
 
-        private void Setup(CrytorType type) {
+        void Setup(CrytorType type) {
             ValidateProperties();
             if (this.Algorithm == null)
                 SetupAlgorithm();
             SetupCryptor(type);
         }
 
-        private void SetupAlgorithm() {
+        void SetupAlgorithm() {
             CreateAlgorithm();
             PasswordDeriveBytes pdb = new PasswordDeriveBytes(this._key.GetBytes(), this._key.GetBytes());
             this.Algorithm.Key = pdb.GetBytes(this.Algorithm.KeySize / 8);
@@ -58,7 +58,7 @@ namespace CMCoreNET.Security.Encryption
             pdb.Dispose();
         }
 
-        private void SetupCryptor(CrytorType type) {
+        void SetupCryptor(CrytorType type) {
             switch (type) {
                 case CrytorType.Encrypt:
                     this.cryptor = this.Algorithm.CreateEncryptor(this.Algorithm.Key, this.Algorithm.IV);
@@ -71,7 +71,7 @@ namespace CMCoreNET.Security.Encryption
             }   
         }
 
-        private void ValidateProperties() {
+        void ValidateProperties() {
             if (Data == null)
                 throw new NullReferenceException("Data to encrypt is null");
             if (string.IsNullOrEmpty(_key))
@@ -84,7 +84,7 @@ namespace CMCoreNET.Security.Encryption
             this.Algorithm = (T)typeof(T).GetInstance();
         }
 
-        private void EncryptData() {
+        void EncryptData() {
             using (MemoryStream dataStream = new MemoryStream()) { 
                 using (CryptoStream cryptoStream = new CryptoStream(dataStream, this.cryptor, CryptoStreamMode.Write)) {
                     cryptoStream.Write(this.Data, 0, this.Data.Length);
@@ -94,7 +94,7 @@ namespace CMCoreNET.Security.Encryption
             }
         }
 
-        private void EncryptData(Stream dataStream)
+        void EncryptData(Stream dataStream)
         {
             using (CryptoStream cryptoStream = new CryptoStream(dataStream, this.cryptor, CryptoStreamMode.Write))
             {
@@ -103,7 +103,7 @@ namespace CMCoreNET.Security.Encryption
             }
         }
 
-        private void DecryptData() {
+        void DecryptData() {
             using (MemoryStream dataStream = new MemoryStream()) {
                 using (CryptoStream cryptoStream = new CryptoStream(dataStream, this.cryptor, CryptoStreamMode.Write)) {
                     cryptoStream.Write(this.Data, 0, this.Data.Length);

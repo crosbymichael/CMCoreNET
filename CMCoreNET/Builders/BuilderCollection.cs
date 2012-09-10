@@ -8,8 +8,8 @@ namespace CMCoreNET.Builders
 {
     public class BuilderCollection<T> : IDisposable
     {
-        private Dictionary<string, List<T>> builders;
-        private T defaultBuilder;
+        Dictionary<string, List<T>> builders;
+        T defaultBuilder;
 
         public BuilderCollection() {
             builders = new Dictionary<string, List<T>>();
@@ -57,7 +57,7 @@ namespace CMCoreNET.Builders
             }
         }
 
-        private bool ContainsBuilder(IEnumerable<T> list, T builder)
+        bool ContainsBuilder(IEnumerable<T> list, T builder)
         {
             return list.Any(b => b.GetType().Name == builder.GetType().Name);
         }

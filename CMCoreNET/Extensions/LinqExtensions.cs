@@ -20,7 +20,7 @@ namespace CMCoreNET
 
         public static T GetByType<T>(this IEnumerable<T> helper)
         {
-            return helper.OfType<T>().FirstOrDefault();
+            return helper.OfType<T>().SingleOrDefault();
         }
 
         public static T GetOrNew<T>(this ICollection<T> helper)

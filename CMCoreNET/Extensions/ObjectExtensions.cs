@@ -10,7 +10,7 @@ namespace CMCoreNET
 {
     public static class ObjectExtensions
     {
-        public static string ToJson(this object helper) {
+        public static string ToJson<T>(this T helper) where T : class {
             Type myType = helper.GetType();
             if (!myType.IsSerializable)
                 return null;
@@ -19,7 +19,7 @@ namespace CMCoreNET
             return adapter.Serialize(helper);
         }
 
-        public static string ToXml(this object helper) {
+        public static string ToXml<T>(this T helper) where T : class {
             Type myType = helper.GetType();
             if (!myType.IsSerializable)
                 return null;

@@ -24,18 +24,16 @@ namespace CMCoreNET
             return string.Format("{0}.{1}", typeHelper.Namespace, typeHelper.Name);
         }
 
-        public static System.Attribute GetAttributeOfType<T>(this Type helper) 
+        public static T GetAttributeOfType<T>(this Type helper) where T : Attribute
         {
-            return (System.Attribute)helper.GetCustomAttributes(typeof(T), false).ToList().FirstOrDefault();
+            return helper.GetAttributesOfType<T>()
+                .FirstOrDefault();
         }
 
-        public static IEnumerable<System.Attribute> GetAttributesOfType<T>(this Type helper)
+        public static IEnumerable<T> GetAttributesOfType<T>(this Type helper) where T : Attribute
         {
-            var objlist = helper.GetCustomAttributes(typeof(T), false).ToList();
-            List<System.Attribute> attrs = new List<Attribute>();
-
-            objlist.ForEach(o => attrs.Add((System.Attribute)o));
-            return attrs;
+            return helper.GetCustomAttributes(typeof(T), false)
+                .Cast<T>();
         }
 
         public static bool ImplementsInterface<T>(this Type typeHelper)

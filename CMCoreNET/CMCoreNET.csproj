@@ -35,7 +35,6 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,18 +46,13 @@
     <Compile Include="Builders\BuildDirector.cs" />
     <Compile Include="Builders\BuilderCollection.cs" />
     <Compile Include="Builders\ModelBuildDirector.cs" />
-    <Compile Include="Config\Configuration.cs" />
-    <Compile Include="Data\SQLCEIdentity.cs" />
-    <Compile Include="Enums.cs" />
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
-    <Compile Include="Extensions\ObjectContextExtension.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Helpers\Property.cs" />
-    <Compile Include="Mappers\MapperBucket.cs" />
     <Compile Include="Mappers\ObjectMapper.cs" />
     <Compile Include="Net\EmailService.cs" />
     <Compile Include="Net\UrlRequest.cs" />
@@ -69,7 +63,6 @@
     <Compile Include="Security\Hash.cs" />
     <Compile Include="Security\IEncryptionAlgorithm.cs" />
     <Compile Include="Security\SecurityFactories.cs" />
-    <Compile Include="Security\TrialProvider.cs" />
     <Compile Include="Serialization\JsonSerializer.cs" />
     <Compile Include="Serialization\SerializationAdapter.cs" />
     <Compile Include="Serialization\XmlSerializer.cs" />
